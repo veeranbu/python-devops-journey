@@ -45,7 +45,9 @@ print(f"Hello, {name}!")
 color = input("what is your favorite color?")
 print(color)
 print(f"Your favorite color is {color}")
-
+# Task 3
+number = 10
+if number > 5: print('Yes, 10 is greater than 5')
 
 
 
