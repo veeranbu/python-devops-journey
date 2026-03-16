@@ -20,4 +20,29 @@ print(type({'name': 'Asabeneh'}))  # Dictionary
 print(type((9.8, 3.14, 2.7)))    # Tuple
 print(type(True))
 
+x = 43
+x = x- 1
+print(x)
+
+a =10
+b = 20
+print(a)
+print(b)
+c =b
+print(c)
+b =a
+a =c
+print(a)
+print(b)
+
+#Task:
+#Create a variable called 'name' with your name, then print 'Hello, [name]!'
+# Create a string variable
+name = 'Python'
+print(f"Hello, {name}!")
+
+
+
+
+
 
