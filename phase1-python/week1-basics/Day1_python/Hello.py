@@ -35,11 +35,16 @@ a =c
 print(a)
 print(b)
 
-#Task:
+#Task:1
 #Create a variable called 'name' with your name, then print 'Hello, [name]!'
 # Create a string variable
 name = 'Python'
 print(f"Hello, {name}!")
+
+#Task :2
+color = input("what is your favorite color?")
+print(color)
+print(f"Your favorite color is {color}")
 
 
 
