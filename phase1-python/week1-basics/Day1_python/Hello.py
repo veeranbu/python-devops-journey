@@ -49,6 +49,10 @@ print(f"Your favorite color is {color}")
 number = 10
 if number > 5: print('Yes, 10 is greater than 5')
 
+import keyword
+print(keyword.kwlist)
+
+
 
 
 

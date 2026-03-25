@@ -1,5 +1,7 @@
-Python is general purpose high level programing language
-Python was developed by guido van rossam in 1989
+* **Python is general purpose high level programing language
+* Python was developed by guido van rossam in 1989**
+
+
 Python reserves 35 keywords:
 False
 None
