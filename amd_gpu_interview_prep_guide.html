@@ -1,0 +1,493 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.wrap { padding: 1rem 0; }
+.header { margin-bottom: 1.5rem; }
+.header h1 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.header p { font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
+.tab { font-size: 12px; padding: 5px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+.tab:hover { border-color: var(--color-border-primary); color: var(--color-text-primary); }
+.tab.active { background: #185FA5; border-color: #185FA5; color: #E6F1FB; }
+.section { display: none; }
+.section.active { display: block; }
+.section-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.q-block { margin-bottom: 8px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+.q-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; cursor: pointer; background: var(--color-background-primary); gap: 8px; }
+.q-header:hover { background: var(--color-background-secondary); }
+.q-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); white-space: nowrap; }
+.badge-basic { background: #EAF3DE; color: #3B6D11; }
+.badge-inter { background: #FAEEDA; color: #633806; }
+.badge-adv { background: #FAECE7; color: #4A1B0C; }
+.badge-scen { background: #E6F1FB; color: #042C53; }
+.chevron { font-size: 12px; color: var(--color-text-tertiary); transition: transform 0.2s; }
+.q-body { display: none; padding: 12px 14px; background: var(--color-background-secondary); border-top: 0.5px solid var(--color-border-tertiary); }
+.q-body.open { display: block; }
+.chevron.open { transform: rotate(180deg); }
+.answer-section { margin-bottom: 10px; }
+.answer-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-tertiary); margin-bottom: 5px; }
+.answer-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.7; }
+.amd-tip { background: #E6F1FB; border-left: 2px solid #185FA5; padding: 8px 10px; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; margin-top: 8px; }
+.amd-tip-label { font-size: 10px; font-weight: 500; color: #0C447C; margin-bottom: 3px; letter-spacing: 0.5px; }
+.amd-tip-text { font-size: 12px; color: #0C447C; line-height: 1.6; }
+.key-phrase { background: #EAF3DE; color: #3B6D11; padding: 1px 6px; border-radius: 4px; font-size: 12px; font-family: var(--font-mono); }
+.scenario-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; margin-bottom: 8px; }
+.scenario-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 6px; }
+.step { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 5px; }
+.step-num { background: #185FA5; color: #E6F1FB; font-size: 10px; font-weight: 500; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.step-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+.progress-bar { height: 3px; background: var(--color-border-tertiary); border-radius: 2px; margin-bottom: 1.5rem; }
+.progress-fill { height: 3px; background: #185FA5; border-radius: 2px; transition: width 0.3s; }
+.stat-row { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; flex: 1; min-width: 100px; }
+.stat-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.stat-lbl { font-size: 12px; color: var(--color-text-secondary); }
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <h1>AMD GPU Engineer — Interview Prep</h1>
+    <p>Contract role · All 9 topic areas · Click any question to expand the answer</p>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><div class="stat-val" id="total-q">0</div><div class="stat-lbl">Questions</div></div>
+    <div class="stat"><div class="stat-val" id="opened-q">0</div><div class="stat-lbl">Reviewed</div></div>
+    <div class="stat"><div class="stat-val" id="pct-q">0%</div><div class="stat-lbl">Progress</div></div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showSection(0)">1 Pipeline</button>
+    <button class="tab" onclick="showSection(1)">2 APIs</button>
+    <button class="tab" onclick="showSection(2)">3 Debug Tools</button>
+    <button class="tab" onclick="showSection(3)">4 Performance</button>
+    <button class="tab" onclick="showSection(4)">5 Game Engines</button>
+    <button class="tab" onclick="showSection(5)">6 Testing</button>
+    <button class="tab" onclick="showSection(6)">7 Automation</button>
+    <button class="tab" onclick="showSection(7)">8 Scenarios</button>
+    <button class="tab" onclick="showSection(8)">9 Behavioral</button>
+  </div>
+
+  <div id="sections"></div>
+</div>
+
+<script>
+const data = [
+  {
+    title: "Graphics Pipeline & GPU Fundamentals",
+    questions: [
+      {
+        q: "Explain the graphics rendering pipeline.",
+        level: "basic",
+        answer: "The pipeline transforms 3D scene data into a 2D image on screen through 5 key stages: (1) Vertex Processing — vertices are transformed from model space to screen space using the vertex shader; (2) Primitive Assembly — vertices are grouped into triangles; (3) Rasterization — triangles are converted into pixel fragments; (4) Fragment/Pixel Shading — per-pixel color is computed applying lighting, textures, shadows; (5) Output Merger — final depth testing and blending writes to the frame buffer.",
+        amd: "In GPU validation at AMD, each stage is a test boundary. During GFX IP bringup, I'd verify correctness at every stage — especially rasterization accuracy and pixel shader output — using RenderDoc frame captures."
+      },
+      {
+        q: "What is the difference between CPU and GPU architecture?",
+        level: "basic",
+        answer: "A CPU has a few powerful cores (4–64) optimized for sequential, low-latency tasks — it handles OS, application logic, and game AI. A GPU has thousands of smaller cores (CUs/Shaders) optimized for massively parallel throughput — it executes the same operation across large datasets simultaneously. CPUs use large caches and branch predictors; GPUs prioritize arithmetic throughput and memory bandwidth.",
+        amd: "AMD's RDNA architecture uses Compute Units (CUs), each containing 64 stream processors. CDNA (used in Instinct series) is tuned for HPC/AI — same parallel principle but optimized for FP64 and matrix operations rather than graphics."
+      },
+      {
+        q: "What are Vertex Shader, Pixel Shader, and Geometry Shader?",
+        level: "basic",
+        answer: "Vertex Shader: runs once per vertex — transforms positions from 3D model space to 2D screen space, passes along texture coords and normals. Pixel/Fragment Shader: runs once per screen pixel — computes final color using lighting models, texture samples, and shadow data. Geometry Shader: optional stage between vertex and rasterization — can generate or discard primitives, used for effects like shadow volumes, particle systems, and cube-map rendering in one pass.",
+        amd: "During shader validation I'd capture frames in RenderDoc and inspect per-shader inputs/outputs to confirm correctness across driver builds. Regression in the pixel shader stage is a common failure mode after compiler changes."
+      },
+      {
+        q: "What is a Frame Buffer?",
+        level: "basic",
+        answer: "A frame buffer is the GPU memory region that stores the final rendered image before it is displayed. It typically contains a color buffer (pixel colors), a depth buffer (Z values for depth testing), and a stencil buffer (masking). Double or triple buffering is used so one buffer is displayed while another is being rendered, preventing tearing.",
+        amd: "VRAM allocation for frame buffers is a key monitoring metric — especially at high resolutions (4K + HDR) where a single buffer can exceed 30MB. VRAM overflow to system RAM causes major performance degradation."
+      },
+      {
+        q: "What is Rasterization?",
+        level: "basic",
+        answer: "Rasterization converts geometric primitives (triangles) into discrete pixel fragments. The rasterizer determines which screen pixels are covered by each triangle, generating fragments for each covered pixel. These fragments carry interpolated attributes (UV, color, normal) passed to the pixel shader. It is the transition from continuous geometry to discrete pixels.",
+        amd: "Rasterization artifacts — pixel gaps, incorrect coverage, z-fighting — are classic GPU bringup bugs. I'd use RenderDoc's geometry view to verify triangle coverage and compare against reference output."
+      },
+      {
+        q: "What is V-Sync and why is it used?",
+        level: "basic",
+        answer: "V-Sync (Vertical Synchronization) locks the GPU's frame submission rate to the monitor's refresh rate (e.g., 60Hz). Without it, the GPU may send a new frame mid-scan, causing the monitor to display parts of two different frames simultaneously — this is called screen tearing. V-Sync eliminates tearing but can introduce input latency and cause frame rate drops to exact divisors (60→30→20fps). Modern alternatives like AMD FreeSync and NVIDIA G-Sync eliminate both problems using adaptive refresh.",
+        amd: "In validation, V-Sync is often disabled during benchmarking to get uncapped FPS readings. For AMD displays, FreeSync (Adaptive Sync over DisplayPort) is the preferred sync technology — I'd validate FreeSync compliance as part of display output testing."
+      },
+      {
+        q: "What causes frame drops in games?",
+        level: "basic",
+        answer: "Frame drops occur when a frame takes longer to render than the target frame time (e.g., >16.6ms for 60fps). Root causes: GPU bottleneck (too many pixels/triangles), CPU bottleneck (physics, AI, or excessive draw calls), VRAM overflow, driver-side shader recompilation stalls, thermal throttling, or poor synchronization between CPU and GPU work. The key is identifying which component is the constraint using profiling tools before optimizing.",
+        amd: "My debugging approach: start with GPU and CPU utilization — if GPU is near 100% and CPU is not, it's GPU-bound. If GPU sits at 60-70%, look at CPU, driver overhead, or sync issues. AMD Radeon GPU Profiler and ROCm SMI are my go-to tools for this."
+      },
+      {
+        q: "Explain the difference between Compute Shader and Pixel Shader.",
+        level: "inter",
+        answer: "Pixel Shader runs as part of the graphics pipeline — it is called for each screen fragment during rasterization and outputs a color to the render target. Compute Shader operates entirely outside the graphics pipeline — it runs as a general-purpose compute dispatch with arbitrary read/write access to GPU memory (UAVs/SSBOs). Compute shaders are used for post-processing, physics simulation, AI inference, ray tracing acceleration, and any task that doesn't fit the graphics pipeline's fixed structure.",
+        amd: "On AMD hardware, compute shaders leverage the same CUs as graphics but with different queue types. ROCm uses compute shaders extensively — HIP is essentially a high-level interface for dispatching compute work. In validation, I'd run both graphics and compute workloads to stress all execution paths."
+      },
+      {
+        q: "What is tessellation in graphics?",
+        level: "inter",
+        answer: "Tessellation subdivides polygons (typically triangles or quads) into smaller triangles to add geometric detail dynamically. The pipeline stages are: Hull Shader (determines subdivision factor), Fixed-Function Tessellator (generates new vertices), and Domain Shader (positions new vertices, often using displacement maps). This enables Level-of-Detail — objects close to the camera get subdivided more, distant objects less, saving GPU work without sacrificing near-field quality.",
+        amd: "Tessellation validation involves verifying correct patch subdivision at different detail levels and ensuring the Domain Shader outputs correctly positioned vertices. TDR (Timeout Detection and Recovery) hangs during complex tessellation workloads were a known bringup issue."
+      },
+      {
+        q: "What is overdraw?",
+        level: "inter",
+        answer: "Overdraw occurs when the GPU renders multiple fragments for the same screen pixel, only to discard all but the front-most one. A pixel drawn 4 times = 4x overdraw. It wastes fragment shader cycles on invisible geometry. Causes include transparent objects, incorrect draw order (back-to-front not sorted), and heavy particle systems. Solutions include early Z-testing, occlusion culling, and sorting draw calls front-to-back for opaque geometry.",
+        amd: "RenderDoc's overdraw visualization is a great way to show this to developers — it heat-maps pixels by draw count. High overdraw in specific scene areas is often the root cause of GPU-bound frame drops."
+      },
+      {
+        q: "What is the difference between forward rendering and deferred rendering?",
+        level: "inter",
+        answer: "Forward Rendering: processes each object and computes lighting for all lights in a single pass. Simple, works well with transparency and MSAA, but scales poorly with many lights (cost = objects × lights). Deferred Rendering: first pass writes geometry data (position, normals, material) to a G-Buffer; second pass computes lighting per pixel using the G-Buffer. Scales well with many lights but uses more VRAM and struggles with transparency and MSAA.",
+        amd: "Deferred rendering is common in modern AAA games and is a heavy VRAM workload — validating G-Buffer formats, render target precision, and VRAM utilization under deferred rendering is important during driver validation."
+      },
+      {
+        q: "What are draw calls?",
+        level: "inter",
+        answer: "A draw call is a CPU command issued to the GPU instructing it to render a batch of geometry with a specific pipeline state (shaders, textures, render states). Each draw call has CPU overhead — setting up state, validating resources, and submitting to the command queue. Too many draw calls per frame (>10,000 in DX11) causes CPU bottlenecks because the driver cannot feed the GPU fast enough. DX12/Vulkan reduce this overhead via command buffers and instanced rendering.",
+        amd: "I'd monitor draw call count alongside GPU utilization. If GPU is underutilized but CPU is at 100%, excessive draw calls are suspect. Batching geometry (combining draw calls into fewer, larger ones) is the fix — I'd verify driver-side batching optimizations during regression testing."
+      }
+    ]
+  },
+  {
+    title: "Graphics APIs",
+    questions: [
+      {
+        q: "What is DirectX?",
+        level: "basic",
+        answer: "DirectX is Microsoft's collection of multimedia APIs for Windows and Xbox. For GPU work, the critical component is Direct3D (D3D) — the 3D graphics API. D3D provides an abstraction over GPU hardware so applications don't write GPU-vendor-specific code. Versions: D3D11 (driver-managed, high abstraction), D3D12 (explicit, low-level, closer to metal). DirectX also includes DirectCompute for GPGPU and DirectML for AI acceleration.",
+        amd: "AMD GPUs are validated against DirectX compliance requirements. D3D conformance tests (DXCBT) are part of the standard test suite. D3D12 validation is increasingly important as modern games adopt explicit APIs."
+      },
+      {
+        q: "Difference between Vulkan and OpenGL.",
+        level: "basic",
+        answer: "OpenGL is a high-level API dating to 1992 — the driver handles state management, shader compilation, memory management, and synchronization automatically, making it easy to use but adding unpredictable CPU overhead. Vulkan (2016) is a low-level, explicit API — developers control memory allocation, command buffer recording, render pass layout, and synchronization manually. Vulkan has lower CPU overhead, better multi-threading support, and more predictable performance at the cost of much higher development complexity.",
+        amd: "AMD's open-source RADV Vulkan driver is an important test target. Vulkan CTS (Conformance Test Suite) is a key validation workload. ROCm also uses a similar explicit model for compute — the philosophy of explicit resource management carries over."
+      },
+      {
+        q: "Why is Vulkan faster than OpenGL in many cases?",
+        level: "inter",
+        answer: "Three main reasons: (1) Reduced driver overhead — Vulkan moves work that OpenGL's driver did implicitly (state validation, shader recompilation, memory management) to the application, eliminating runtime surprises. (2) Multi-threading — Vulkan command buffers can be built in parallel on multiple CPU threads; OpenGL uses a single-threaded command stream. (3) Explicit synchronization — no hidden pipeline flushes or stalls; developers specify exactly when GPU memory is readable/writable, enabling tighter GPU utilization.",
+        amd: "In practice, Vulkan's benefits show most in CPU-bound scenes. On AMD hardware, the RDNA2/3 architecture's hardware scheduler (HWS) can better utilize Vulkan's explicit submit model to overlap graphics and async compute queues."
+      },
+      {
+        q: "What is a command buffer in Vulkan?",
+        level: "inter",
+        answer: "A command buffer is a pre-recorded sequence of GPU commands — draw calls, compute dispatches, image layout transitions, pipeline binds, and memory barriers. Command buffers are recorded once (or per-frame) and submitted to a queue for execution. Benefits: recording can happen on multiple CPU threads simultaneously; secondary command buffers enable modular, reusable command sequences. Command buffers are allocated from Command Pools tied to a specific queue family.",
+        amd: "When debugging GPU hangs or TDR events on AMD hardware, command buffer analysis is critical — I'd identify which specific command caused the hang by bisecting the command stream using a GPU debugger. RGP (Radeon GPU Profiler) provides per-command timing on AMD hardware."
+      },
+      {
+        q: "What are pipelines in Vulkan?",
+        level: "inter",
+        answer: "A Vulkan pipeline is a fully compiled, immutable object representing the complete GPU state for a draw or dispatch. Graphics pipeline includes: shader stages (vert/geom/frag), vertex input layout, rasterization state, depth/stencil state, blend state, and render pass compatibility. All state is baked at creation time — no implicit state changes during rendering. This eliminates the runtime shader recompilation and state-change overhead that causes hitching in OpenGL/D3D11.",
+        amd: "Pipeline compilation is a major source of stutter in early game releases. AMD's shader compiler (ACO/LLVM backend) is validated to produce correct machine code for each pipeline configuration. Pipeline cache validation is a specific test area."
+      },
+      {
+        q: "What is the difference between DirectX 11 and DirectX 12?",
+        level: "inter",
+        answer: "D3D11 is driver-managed: the driver handles memory, synchronization, and resource states automatically — simple to use but high CPU overhead and unpredictable stalls. D3D12 is application-managed: developers explicitly manage resource heaps, descriptor tables, resource state transitions, and command queue synchronization. D3D12 adds: multi-engine (async compute + copy queues), explicit multi-adapter, and mesh shaders. D3D12 delivers lower CPU overhead and better GPU utilization when used correctly, but requires expert-level graphics programming.",
+        amd: "Both D3D11 and D3D12 are validation targets. D3D12's async compute support is particularly relevant for AMD — RDNA2+ has dedicated async compute hardware. Validating correct behavior of async compute alongside graphics work is a specific test scenario."
+      }
+    ]
+  },
+  {
+    title: "GPU Debugging & Trace Tools",
+    questions: [
+      {
+        q: "What is GPU trace capture?",
+        level: "basic",
+        answer: "GPU trace capture records all GPU commands, resource states, pipeline configurations, and timing data for a target frame or time window. The capture encapsulates draw calls, compute dispatches, shader binaries, render targets, and hardware counter data. This snapshot enables offline analysis — you can replay the captured frame to isolate bugs, measure per-stage performance, and compare against a known-good reference without needing the live application.",
+        amd: "My standard debug workflow: reproduce → capture → analyze. For AMD-specific work, Radeon GPU Profiler (RGP) provides hardware-level trace capture including wave occupancy, cache hit rates, and async compute utilization — data not available in generic tools like RenderDoc."
+      },
+      {
+        q: "How do you use RenderDoc to debug a frame?",
+        level: "inter",
+        answer: "Step 1: Inject RenderDoc into the target application or use its launch wrapper. Step 2: Press F12 (or configured key) to capture a frame. Step 3: In the Event Browser, find the draw call where the visual artifact appears. Step 4: In Pipeline State, inspect each stage — verify correct shader is bound, resources are properly set. Step 5: Use the Texture Viewer to inspect render targets, depth buffers, and input textures. Step 6: In the Shader Debugger, step through vertex or pixel shader execution per-sample to find incorrect calculations.",
+        amd: "For AMD-specific artifacts I'd cross-reference RenderDoc findings with the AMD GPU architecture documentation — for example, checking if a specific render target format is correctly supported by the RDNA hardware's RB (Render Backend)."
+      },
+      {
+        q: "What information can you get from a GPU capture?",
+        level: "inter",
+        answer: "From a GPU capture: complete draw call list with state for each; vertex buffer and index buffer data; bound shader binaries (decompilable); all render target and texture contents at any point; depth/stencil buffer states; pipeline configuration per draw; GPU timing per draw call (in tools like PIX/RGP); shader register and thread execution data (in shader debugger mode); API call stack showing which application code issued each draw.",
+        amd: "RGP goes further on AMD hardware — it shows: GPU timeline with overlapping compute/graphics work, hardware queue utilization, VGPR (vector register) pressure per shader, and L0/L1/L2 cache hit rates. This level of detail is what I'd use for silicon validation versus just driver debugging."
+      },
+      {
+        q: "How do you identify GPU bottlenecks using trace tools?",
+        level: "inter",
+        answer: "Step 1: Check overall GPU utilization — if GPU is below 80% while CPU is near 100%, it's CPU-bound, not GPU-bound. Step 2: In the GPU timeline, identify the longest-duration draw calls or compute dispatches. Step 3: For those calls, check: shader execution time (ALU bound?), memory access patterns (bandwidth bound?), or stall time (waiting for resources?). Step 4: Hardware counters — cache miss rate, occupancy, and ALU efficiency — pinpoint the exact bottleneck type. Step 5: Cross-reference with overdraw, draw call count, and VRAM usage.",
+        amd: "RGP's Wavefront Occupancy view is particularly useful — low occupancy (threads waiting on memory) versus high occupancy with low ALU efficiency tells you whether you're bandwidth-bound or compute-bound. This distinction drives different optimization strategies."
+      },
+      {
+        q: "What is GPU pipeline state in debugging tools?",
+        level: "inter",
+        answer: "Pipeline state is the complete configuration of the GPU at a given draw call: bound vertex/index buffers, active shaders (with bytecode), rasterizer settings (fill mode, cull mode, depth bias), depth/stencil test configuration, blend state per render target, bound textures and samplers, and constant buffer contents. Debugging tools display this state per draw call so you can verify the GPU was configured exactly as intended by the application. Incorrect pipeline state is a frequent source of rendering bugs.",
+        amd: "A common bug pattern: cull mode incorrectly set to FRONT causes geometry to be invisible on AMD but visible on other vendors due to winding-order differences. Pipeline state inspection immediately surfaces this — no need to dig into the shader."
+      }
+    ]
+  },
+  {
+    title: "Game Performance Analysis",
+    questions: [
+      {
+        q: "What is FPS and how do you measure game performance?",
+        level: "basic",
+        answer: "FPS (Frames Per Second) is the number of frames rendered in one second. It is the primary user-facing performance metric. Measurement tools: FRAPS (overlay counter + CSV logging), GameBench (mobile), Intel PresentMon (system-wide, low overhead), in-engine counters. For validation, raw average FPS alone is insufficient — percentile metrics (1% low, 0.1% low) capture stutters that averages hide. A game averaging 90fps with a 1% low of 25fps feels much worse than one averaging 60fps with a 1% low of 55fps.",
+        amd: "I always capture average, 1% low, and 0.1% low FPS during benchmark runs. For regression testing, a 5% drop in 1% low is often more significant than a 5% drop in average FPS from a user-experience perspective."
+      },
+      {
+        q: "What causes low FPS in games?",
+        level: "basic",
+        answer: "GPU-side: exceeding shading bandwidth (too many complex shaders), memory bandwidth saturation (high-res textures), vertex throughput limits, VRAM overflow. CPU-side: physics, AI pathfinding, excessive draw calls, engine update overhead. Thermal throttling: GPU or CPU clock reduction due to heat. Driver-side: shader recompilation stalls, incorrect power state. Memory: system RAM bandwidth or capacity bottleneck. The root cause must be isolated through profiling before fixing.",
+        amd: "On AMD platforms I'd check TDP and power state using ROCm SMI or HWINFO64 — a GPU running at reduced clock (e.g., SCLK dropping from 2500MHz to 1800MHz) under sustained load indicates thermal or power throttling, which causes gradual FPS degradation."
+      },
+      {
+        q: "Difference between CPU bottleneck and GPU bottleneck.",
+        level: "basic",
+        answer: "CPU bottleneck: GPU utilization is low (50-70%) but CPU is near 100%. The CPU cannot generate and submit draw calls or simulation updates fast enough to keep the GPU fed. Signs: lowering resolution or graphics quality doesn't improve FPS; reducing game logic complexity does. GPU bottleneck: GPU utilization is high (95-100%), CPU has headroom. The GPU is the constraint — it cannot finish rendering the frame in time. Signs: lowering resolution directly improves FPS; reducing CPU workload doesn't.",
+        amd: "Accurate identification matters: I've seen cases where GPU utilization appears low because the GPU is stalling waiting on CPU data (sync issue), not because it's truly CPU-bottlenecked. Frame timeline analysis in RGP resolves this — you can see exact CPU→GPU handoff timing."
+      },
+      {
+        q: "What metrics do you analyze during performance testing?",
+        level: "inter",
+        answer: "Primary: average FPS, 1% low FPS, 0.1% low FPS, frame time (ms). GPU: utilization %, VRAM usage (MB/GB), GPU clock (MHz), GPU temperature, power draw (W). CPU: utilization %, CPU clock, memory bandwidth. Rendering: draw call count, triangle count, shader execution time, overdraw ratio, render target memory. API: command buffer submission time, present latency. For regression: delta comparison between builds, statistical significance of changes.",
+        amd: "For an AMD GPU validation report I'd include: GPU SCLK/MCLK frequencies, GFX/Compute utilization split, L2 cache hit rate, and memory controller utilization — these hardware counters tell the story of where the GPU is spending its time at a silicon level."
+      }
+    ]
+  },
+  {
+    title: "Game Engines",
+    questions: [
+      {
+        q: "What is a game engine?",
+        level: "basic",
+        answer: "A game engine is a software framework providing reusable systems for building games: a rendering engine (submits draw calls to GPU APIs), physics simulation, asset pipeline (loading meshes, textures, shaders), scripting runtime (C#/Blueprint/Lua), audio, networking, and editor tooling. The engine abstracts platform and GPU API differences — developers write gameplay code, the engine handles DirectX/Vulkan/Metal submission appropriately.",
+        amd: "From a validation perspective, game engines are test vehicles — we validate GPU drivers by running workloads through Unreal, Unity, and id Tech engine games. Engine-specific rendering paths (Unreal's Lumen, Unity's SRP) represent different GPU usage patterns that must all be validated."
+      },
+      {
+        q: "Difference between Unity and Unreal Engine.",
+        level: "basic",
+        answer: "Unity: C# scripting, flexible render pipelines (URP/HDRP/Built-in), large asset store, strong mobile/indie presence, easier entry curve. Unreal Engine: C++ and Blueprint visual scripting, built-in photorealistic rendering (Lumen GI, Nanite virtualized geometry), dominant in AAA and film, heavier on GPU resources. For GPU validation: Unreal's Nanite and Lumen are extremely demanding compute workloads; Unity's SRP provides more controlled, configurable rendering paths for targeted testing.",
+        amd: "Unreal Engine 5 with Lumen and Nanite is a key validation workload for AMD. Nanite uses mesh shaders and software rasterization — these are advanced GPU features that require specific hardware validation. I'd include UE5 benchmark scenes in the validation suite."
+      },
+      {
+        q: "How does a game engine interact with GPU APIs?",
+        level: "inter",
+        answer: "The engine's RHI (Rendering Hardware Interface) layer abstracts the underlying GPU API. The RHI translates engine render commands into API-specific calls: a 'SetPipelineState' in the RHI becomes a PSO bind in D3D12 or a pipeline bind in Vulkan. The engine's renderer records draw calls into RHI command lists; the RHI layer submits these as D3D12 command lists or Vulkan command buffers. This abstraction enables cross-platform rendering from a single codebase.",
+        amd: "AMD works closely with engine developers on RHI optimizations. Issues in the AMD-specific code path of an engine's D3D12 or Vulkan backend — incorrect resource state transitions, wrong synchronization — are bugs I'd isolate by comparing behavior between the D3D12 and Vulkan paths on the same hardware."
+      },
+      {
+        q: "What is shader compilation in game engines?",
+        level: "inter",
+        answer: "Shader compilation converts HLSL/GLSL source into GPU machine code. This happens in multiple stages: offline (during asset cooking, source → DXIL/SPIR-V bytecode), and runtime (bytecode → GPU ISA via the driver compiler, triggered when a PSO is first created). First-use compilation during gameplay causes 'shader compilation stutter' — a major quality issue. Modern solutions: PSO caches (pre-warm common pipeline states at startup), background compilation, and AMD's shader pre-compilation using their offline shader compiler.",
+        amd: "Shader compiler correctness — generating valid ISA from HLSL/GLSL inputs — is a critical AMD validation area. Regressions in the shader compiler can cause visual artifacts or incorrect compute results. I'd run a shader compilation regression suite comparing outputs between driver builds using AMD's shader compiler tools."
+      }
+    ]
+  },
+  {
+    title: "Testing & Validation",
+    questions: [
+      {
+        q: "How do you design a test plan for GPU validation?",
+        level: "basic",
+        answer: "A GPU test plan covers: (1) Functional — API conformance (D3D12/Vulkan CTS), feature correctness (tessellation, ray tracing, compute), output correctness via pixel comparison. (2) Performance — FPS benchmarks with percentile targets, frame time variance, GPU utilization baselines. (3) Stability — extended stress tests (4h+ burn-in), multi-GPU scenarios, edge case inputs. (4) Compatibility — game titles, engine versions, OS/driver combinations. (5) Regression — automated comparison against last-known-good build. Each test has pass/fail criteria and priority (P0=blocking, P1=high, P2=medium).",
+        amd: "For AMD specifically I'd add: PowerPlay validation (dynamic clock scaling), PCIe link speed tests (Gen4/5 throughput), ROCm compute correctness for AI workloads, and multi-display output validation including FreeSync compliance."
+      },
+      {
+        q: "What steps will you take when a game crashes on GPU driver?",
+        level: "inter",
+        answer: "Step 1: Reproduce reliably — note exact conditions (scene, action, duration of play). Step 2: Capture crash dump and GPU timeout log (TDR log on Windows: Event Viewer > System > Atikmpag.sys). Step 3: Check if crash occurs on previous driver — isolate to a specific driver change. Step 4: Capture GPU trace immediately before crash using RenderDoc or PIX. Step 5: Analyze last commands before hang — identify the draw call or compute dispatch that caused TDR. Step 6: Narrow to API (D3D12 vs Vulkan) and pipeline stage. Step 7: File bug with repro steps, trace capture, driver version, and hardware config.",
+        amd: "AMD's GPU hang happens through TDR — the OS resets the GPU after a timeout. Key diagnostic: AMD's UMD (user mode driver) debug logs can capture the last submitted command packet before the hang. I'd enable these logs during reproduction to get the exact failure point."
+      },
+      {
+        q: "How do you reproduce a graphics bug?",
+        level: "basic",
+        answer: "Step 1: Document exact environment (driver version, OS, GPU model, game version, graphics settings). Step 2: Identify minimum reproducible scenario — simplest scene/action that triggers the bug. Step 3: Test across driver versions to determine when the regression was introduced (binary search across builds). Step 4: Test on multiple GPU models/vendors to determine if it's AMD-specific or cross-vendor. Step 5: Capture GPU trace at the exact point of failure. Step 6: Create a standalone repro if possible — isolating the failing API call or shader.",
+        amd: "Minimum repro is critical for AMD's driver team — a 30-second scene capture is far more useful than 'it crashes after 2 hours of play.' I'd prioritize creating the smallest possible repro asset that reliably demonstrates the bug."
+      },
+      {
+        q: "What types of test cases are used for graphics validation?",
+        level: "inter",
+        answer: "Functional: pixel-perfect output comparison against a reference renderer; API conformance tests (DXCBT, Vulkan CTS); feature isolation tests (test one feature with minimal other variables). Performance: timed benchmark scenes; stress tests at maximum quality settings; memory pressure tests (VRAM full scenarios). Negative: invalid API usage to verify graceful handling; edge case geometry (degenerate triangles, zero-area primitives). Compatibility: title-specific game tests; driver upgrade/downgrade scenarios; mixed workload tests (games running alongside compute).",
+        amd: "AMD's internal suite includes KHR-GL and Vulkan CTS compliance, DirectX conformance, and a library of game-engine-based workloads. I'd also add power efficiency tests — performance-per-watt is a key AMD competitive metric."
+      },
+      {
+        q: "How do you report a performance regression?",
+        level: "inter",
+        answer: "A good regression report includes: (1) Summary — metric that regressed, magnitude (e.g., 'Average FPS dropped 18% in [scene]'), affected driver version. (2) Reproduction steps — exact game, scene, graphics settings, hardware config. (3) Data — baseline vs. regressed numbers for all key metrics (avg FPS, 1% low, frame time). (4) Traces — GPU captures from both builds for comparison. (5) Bisection — which specific driver change (commit/CL) introduced the regression if known. (6) Severity — impact on end-user experience, blocking release?",
+        amd: "For AMD I'd also include hardware counter deltas — if avg FPS dropped 18%, did GPU ALU utilization drop (compute efficiency regression), memory bandwidth increase (new shader is more memory-hungry), or draw call count increase (CPU overhead regression)? The hardware counters tell the 'why' behind the number."
+      }
+    ]
+  },
+  {
+    title: "Automation & Scripting",
+    questions: [
+      {
+        q: "Have you used Python for test automation?",
+        level: "basic",
+        answer: "Yes — Python is my primary scripting language for test automation. Common use cases: writing test harnesses that launch game processes, capture performance metrics via subprocess or API hooks, parse log files for pass/fail conditions, and generate comparison reports. Python libraries I use: subprocess (process management), pandas (metrics analysis), matplotlib (performance charts), pytest (test framework), and paramiko (remote SSH for multi-system setups).",
+        amd: "In my validation work I wrote Python scripts to automate benchmark runs across multiple driver builds — the script would install a driver, run a test suite, capture FPS logs, parse results, and generate a delta report. This reduced a manual 4-hour process to a 30-minute automated run."
+      },
+      {
+        q: "How would you automate game benchmarking tests?",
+        level: "inter",
+        answer: "Architecture: (1) Test Manager — Python script that reads a test configuration file (game, scene, settings, iterations). (2) Launcher — invokes the game with specific settings, optionally injecting a PresentMon or FRAPS recording session. (3) Metrics Collector — captures FPS data, GPU utilization, VRAM, temperatures at defined intervals. (4) Result Aggregator — parses raw data, computes avg/1%low/0.1%low FPS, compares against baseline thresholds. (5) Report Generator — produces a structured report (CSV + HTML) with pass/fail status. CI integration via Jenkins triggers the suite on each driver build.",
+        amd: "I'd also integrate AMD-specific data collection — ROCm SMI for SCLK/MCLK/temperature, and RGP batch mode for automated GPU trace capture. Storing traces alongside FPS data makes root-cause analysis of regressions much faster."
+      },
+      {
+        q: "What is CI testing in validation pipelines?",
+        level: "inter",
+        answer: "Continuous Integration (CI) in GPU validation automatically runs a test suite on every new driver build. A CI pipeline typically: triggers on new driver build → installs driver on test machine → executes automated test suite (functional + performance) → compares results to baseline → flags regressions → notifies engineers. Jenkins, GitLab CI, or internal build systems handle orchestration. Test machines are physical (not VMs) because GPU validation requires real hardware. Results are stored in a dashboard for trend analysis over time.",
+        amd: "In my previous role I maintained Jenkins pipelines that ran GPU validation jobs on a farm of AMD hardware. Key challenge: test machine stability — a single GPU crash can abort the entire run. I implemented retry logic and health-check steps to ensure reliable CI results."
+      }
+    ]
+  },
+  {
+    title: "Scenario-Based Questions",
+    questions: [
+      {
+        q: "Scenario: A game drops from 120 FPS to 40 FPS after a driver update.",
+        level: "scen",
+        answer: "",
+        steps: [
+          "Reproduce reliably on the same hardware, game version, and settings used before the regression.",
+          "Confirm driver version introduces regression by rolling back to previous driver — if FPS restores to 120, the driver is confirmed as the cause.",
+          "Profile both drivers: capture GPU utilization, VRAM, frame time, and hardware counters. Identify if the bottleneck changed (GPU-bound vs CPU-bound, bandwidth vs compute).",
+          "Capture RenderDoc/RGP trace on both drivers for the same scene. Compare draw call timing, shader execution, and GPU timeline.",
+          "Check driver release notes and changelogs — identify changes in shader compiler, resource management, or power state handling that could explain the regression.",
+          "Bisect across intermediate driver builds to isolate the exact commit that caused the drop.",
+          "File a P0 bug with repro steps, both driver captures, hardware counter deltas, and the bisection result. Escalate to the driver team with the trace."
+        ],
+        amd: "On AMD specifically: a 3x FPS drop suggests a shader compiler regression — a recompiled shader that now runs at 3x the cycle count. I'd check shader ISA diff between the two driver builds using AMD's shader compiler tools."
+      },
+      {
+        q: "Scenario: Game works on NVIDIA GPU but crashes on AMD GPU.",
+        level: "scen",
+        answer: "",
+        steps: [
+          "First: determine if it's a driver crash (TDR) or application crash. TDR shows Atikmpag.sys in Event Viewer; app crash shows a different call stack.",
+          "Capture GPU trace on AMD just before the crash using RenderDoc or PIX. Compare to a working capture from NVIDIA.",
+          "Look for API usage differences: undefined behavior in D3D12/Vulkan that NVIDIA tolerates but AMD does not (resource state transitions, barrier placement, invalid descriptors).",
+          "Check for AMD-unsupported features or formats — some D3D12 optional features have different support across vendors. Use D3D12 feature query results to identify gaps.",
+          "Analyze shader code — NVIDIA's shader compiler may accept technically invalid HLSL that AMD's compiler rejects. Run HLSL through AMD's offline compiler to surface errors.",
+          "Test on a different AMD GPU model — if it crashes on all AMD hardware, it's likely a driver or API conformance issue, not a specific silicon defect.",
+          "File bug with: crash dump, GPU traces from both vendors, specific API call sequence, and HLSL shaders. Tag as cross-vendor conformance issue."
+        ],
+        amd: "AMD strict conformance to D3D12/Vulkan spec is a feature, not a bug — apps with undefined behavior may work by luck on NVIDIA. I'd document the specific spec violation and work with the game developer to fix the root cause, not just work around it in the driver."
+      },
+      {
+        q: "Scenario: GPU is showing visual artifacts (black triangles, flickering textures) in a specific game.",
+        level: "scen",
+        answer: "",
+        steps: [
+          "Reproduce and capture a frame using RenderDoc at the exact moment the artifact is visible.",
+          "In the Event Browser, find the draw call that renders the corrupted geometry or texture.",
+          "Inspect pipeline state for that draw call — check bound resources, shader, texture formats, and render target configuration.",
+          "Use RenderDoc Texture Viewer to inspect the input texture — is the corruption in the source texture or introduced by the shader?",
+          "Run the pixel shader in the Shader Debugger for an affected pixel — trace the computation to identify where the incorrect value originates.",
+          "If shader appears correct, check vertex buffer contents — corrupted vertex data would cause black triangles (invalid positions) or UV artifacts.",
+          "Test on previous driver — if artifacts disappear, file a driver regression. If present on all drivers, likely a game-side bug. Document both cases."
+        ],
+        amd: "Black triangles often indicate a vertex shader writing NaN/Inf positions — AMD's GPU clips these differently than NVIDIA. I'd add a NaN check in the shader debugger and look for division-by-zero or uninitialized buffer reads."
+      }
+    ]
+  },
+  {
+    title: "Behavioral Questions",
+    questions: [
+      {
+        q: "Tell me about a difficult bug you solved.",
+        level: "basic",
+        answer: "Structure your answer using STAR: Situation (what was the context, what was broken), Task (what was your responsibility), Action (specific debugging steps you took — tools used, hypotheses formed, what you tried), Result (how you resolved it, what you learned). For AMD roles, pick a bug involving GPU debugging — a TDR hang, visual artifact, or performance regression is more relevant than a software bug. Quantify the impact: 'resolved a regression that was blocking driver release' is stronger than 'fixed a bug.'",
+        amd: "Example structure: 'In my post-silicon GPU validation role, we encountered intermittent TDR hangs on a specific game workload. I isolated it to an async compute dispatch hitting a race condition in the command processor. I used [tool] to identify the exact command sequence, worked with the firmware team to add a barrier, and verified the fix across 200 test runs. The fix unblocked our driver release for that quarter.'"
+      },
+      {
+        q: "How do you handle tight debugging timelines?",
+        level: "basic",
+        answer: "My approach: (1) Prioritize ruthlessly — focus on P0 blockers first, defer P2 to the next cycle. (2) Reproduce fast — don't waste time on a bug you can't reproduce reliably. (3) Narrow the problem before going deep — a 10-minute bisection across builds saves hours of trace analysis. (4) Communicate blockers early — if I need data from another team (firmware, compiler), escalate immediately, don't wait until the deadline. (5) Document as you go — even under time pressure, brief notes on what you tried save time if the bug resurfaces.",
+        amd: "At AMD, release cycles are real constraints. I prioritize by asking: 'Does this block the release, or does it affect a subset of users?' That determines whether I work nights on it or schedule it for the next sprint. Transparent status updates to the team are non-negotiable."
+      },
+      {
+        q: "Explain a situation where you collaborated with developers.",
+        level: "basic",
+        answer: "Use a specific example that shows you bridged the gap between QA/validation and engineering. Key elements: you identified a bug that required code/driver changes (not just a test fix), you communicated clearly with the developer (shared traces, data, repro steps), you worked together to verify the fix, and you followed up to confirm no regressions. This shows you're not just a test-runner but a technical partner who accelerates fix velocity.",
+        amd: "Strong example: working with the shader compiler team on a regression — 'I provided the minimal HLSL repro, the before/after ISA diff, and the hardware counter data showing the performance impact. We had a daily sync during the investigation, which helped them find the root cause in 3 days instead of 2 weeks.'"
+      }
+    ]
+  }
+];
+
+let opened = new Set();
+let totalQ = 0;
+
+function badge(level) {
+  const map = { basic: ['badge-basic','basic'], inter: ['badge-inter','intermediate'], adv: ['badge-adv','advanced'], scen: ['badge-scen','scenario'] };
+  const [cls, lbl] = map[level] || ['badge-basic', level];
+  return `<span class="badge ${cls}">${lbl}</span>`;
+}
+
+function toggleQ(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('chev-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    opened.add(id);
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const pct = totalQ > 0 ? Math.round((opened.size / totalQ) * 100) : 0;
+  document.getElementById('opened-q').textContent = opened.size;
+  document.getElementById('pct-q').textContent = pct + '%';
+  document.getElementById('prog').style.width = pct + '%';
+}
+
+function showSection(idx) {
+  document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+}
+
+function buildSteps(steps) {
+  return steps.map((s, i) => `<div class="step"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('');
+}
+
+let qIdx = 0;
+const container = document.getElementById('sections');
+
+data.forEach((section, si) => {
+  const secEl = document.createElement('div');
+  secEl.className = 'section' + (si === 0 ? ' active' : '');
+  secEl.innerHTML = `<div class="section-title">${section.title}</div>`;
+  section.questions.forEach(q => {
+    const id = qIdx++;
+    totalQ++;
+    const bodyContent = q.steps
+      ? `<div class="answer-section"><div class="answer-label">Debug approach</div>${buildSteps(q.steps)}</div>`
+      : `<div class="answer-section"><div class="answer-label">Core answer</div><div class="answer-text">${q.answer}</div></div>`;
+    const amdBlock = (q.amd || q.steps) ? `<div class="amd-tip"><div class="amd-tip-label">AMD CONTEXT</div><div class="amd-tip-text">${q.amd || ''}</div></div>` : '';
+    secEl.innerHTML += `
+      <div class="q-block">
+        <div class="q-header" onclick="toggleQ(${id})">
+          <span class="q-label">${q.q}</span>
+          ${badge(q.level)}
+          <span class="chevron" id="chev-${id}">▼</span>
+        </div>
+        <div class="q-body" id="body-${id}">
+          ${bodyContent}
+          ${amdBlock}
+        </div>
+      </div>`;
+  });
+  container.appendChild(secEl);
+});
+
+document.getElementById('total-q').textContent = totalQ;
+updateProgress();
+</script>

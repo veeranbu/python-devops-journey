@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Python Learning Hub — PCIe Edition</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f5f0; color: #1a1a1a; padding: 1.5rem; }
+
+.hub { max-width: 820px; margin: 0 auto; }
+.hub-header { margin-bottom: 1.25rem; }
+.hub-header h1 { font-size: 20px; font-weight: 600; }
+.hub-header p { font-size: 13px; color: #666; margin-top: 3px; }
+
+.nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.nav-btn { padding: 7px 14px; border: 1px solid #ddd; background: #fff; border-radius: 8px; cursor: pointer; font-size: 13px; color: #555; transition: all 0.15s; }
+.nav-btn.active { background: #f0f0ec; color: #111; border-color: #bbb; font-weight: 500; }
+.nav-btn:hover:not(.active) { background: #f5f5f0; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+.card { background: #fff; border: 1px solid #e8e8e4; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+.badge-blue { background: #E6F1FB; color: #0C447C; }
+.badge-green { background: #EAF3DE; color: #27500A; }
+.badge-amber { background: #FAEEDA; color: #633806; }
+.badge-teal { background: #E1F5EE; color: #085041; }
+
+.phase-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.phase-title { font-size: 15px; font-weight: 500; }
+.phase-sub { font-size: 13px; color: #666; margin-top: 2px; }
+
+.day-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+.day-item { border: 1px solid #e8e8e4; border-radius: 8px; padding: 8px 10px; cursor: pointer; transition: all 0.15s; position: relative; }
+.day-item:hover { border-color: #bbb; background: #f9f9f6; }
+.day-item.done { border-color: #1D9E75; background: #E1F5EE; }
+.day-num { font-size: 11px; color: #888; margin-bottom: 2px; }
+.day-topic { font-size: 12px; font-weight: 500; line-height: 1.3; }
+.day-item.done .day-topic { color: #085041; }
+.day-item.done::after { content: "✓"; position: absolute; top: 6px; right: 8px; font-size: 12px; color: #1D9E75; }
+
+.progress-bar-wrap { background: #f0f0ec; border-radius: 20px; height: 8px; margin: 0.5rem 0; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 20px; background: #1D9E75; transition: width 0.3s; }
+
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+.stat-card { background: #f5f5f0; border-radius: 8px; padding: 0.75rem; text-align: center; }
+.stat-num { font-size: 22px; font-weight: 600; }
+.stat-label { font-size: 11px; color: #777; margin-top: 2px; }
+
+.lesson-area { border: 1px solid #e8e8e4; border-radius: 12px; padding: 1rem 1.25rem; min-height: 120px; background: #fff; }
+.lesson-loading { color: #888; font-size: 14px; font-style: italic; }
+.lesson-content { font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
+
+.topic-btn { display: flex; align-items: flex-start; gap: 10px; width: 100%; text-align: left; border: 1px solid #e8e8e4; border-radius: 8px; padding: 10px 12px; background: #fff; cursor: pointer; margin-bottom: 8px; transition: all 0.15s; }
+.topic-btn:hover { background: #f9f9f6; border-color: #bbb; }
+.topic-btn .t-num { font-size: 11px; background: #f0f0ec; border-radius: 4px; padding: 1px 5px; color: #555; min-width: 20px; text-align: center; margin-top: 1px; }
+.topic-btn .t-title { font-size: 14px; font-weight: 500; }
+.topic-btn .t-desc { font-size: 12px; color: #666; margin-top: 2px; }
+
+.qa-input-row { display: flex; gap: 8px; margin-top: 1rem; }
+.qa-input-row input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #fff; }
+.qa-input-row button { padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px; background: #f5f5f0; cursor: pointer; font-size: 13px; }
+.qa-input-row button:hover { background: #fff; }
+
+.project-tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #FAEEDA; color: #633806; margin-right: 4px; }
+.proj-step { display: flex; gap: 8px; margin-bottom: 6px; font-size: 13px; color: #555; align-items: flex-start; }
+.proj-step-num { width: 20px; height: 20px; border-radius: 50%; background: #f0f0ec; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+
+.code-block { background: #f5f5f0; border-radius: 8px; padding: 10px 12px; font-family: "Courier New", monospace; font-size: 12px; margin-top: 6px; overflow-x: auto; white-space: pre; line-height: 1.6; }
+.section-heading { font-size: 12px; font-weight: 600; color: #777; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.topic-tag { font-size: 12px; padding: 3px 10px; background: #f0f0ec; border-radius: 20px; border: 1px solid #e8e8e4; display: inline-block; margin: 3px; }
+
+hr { border: none; border-top: 1px solid #e8e8e4; margin: 1rem 0; }
+.ai-note { font-size: 12px; color: #7a6000; background: #fffbf0; border: 1px solid #f0e0b0; border-radius: 8px; padding: 8px 12px; margin-bottom: 1rem; }
+</style>
+</head>
+<body>
+<div class="hub">
+  <div class="hub-header">
+    <h1>Python learning hub — PCIe edition</h1>
+    <p>60-day plan · PCIe &amp; network card projects · zero to job-ready · Anbu's personal tracker</p>
+  </div>
+  <div class="ai-note">AI lessons require an internet connection and the Anthropic API. All other tabs (tracker, projects, cheat sheet, plan) work fully offline. Progress is saved in your browser automatically.</div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showSection('tracker',this)">Daily tracker</button>
+    <button class="nav-btn" onclick="showSection('lessons',this)">AI lessons</button>
+    <button class="nav-btn" onclick="showSection('projects',this)">PCIe projects</button>
+    <button class="nav-btn" onclick="showSection('cheatsheet',this)">Cheat sheet</button>
+    <button class="nav-btn" onclick="showSection('plan',this)">Full plan</button>
+  </div>
+
+  <div id="sec-tracker" class="section active">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Days done</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">Day streak</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-left">60</div><div class="stat-label">Days left</div></div>
+    </div>
+    <div class="card" style="margin-bottom:0.75rem;">
+      <div style="font-size:13px;color:#666;margin-bottom:6px;">Overall progress</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="main-progress" style="width:0%"></div></div>
+      <div style="font-size:12px;color:#888;margin-top:4px;" id="progress-label">0 of 60 days completed</div>
+    </div>
+    <div id="phases-tracker"></div>
+  </div>
+
+  <div id="sec-lessons" class="section">
+    <div class="card" style="margin-bottom:0.75rem;">
+      <div style="font-size:14px;font-weight:500;margin-bottom:0.75rem;">Choose a topic — AI will teach you with PCIe examples</div>
+      <div id="topic-list"></div>
+    </div>
+    <div class="card" id="lesson-box" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+        <div style="font-size:14px;font-weight:500;" id="lesson-title">Lesson</div>
+        <button class="nav-btn" onclick="document.getElementById('lesson-box').style.display='none'">Close</button>
+      </div>
+      <div class="lesson-area" id="lesson-content"><div class="lesson-loading">Select a topic above to start learning...</div></div>
+      <div class="qa-input-row">
+        <input type="text" id="qa-input" placeholder="Ask a follow-up question..." onkeydown="if(event.key==='Enter')askFollowUp()"/>
+        <button onclick="askFollowUp()">Ask</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-projects" class="section">
+    <p style="font-size:13px;color:#666;margin-bottom:1rem;">Real PCIe &amp; network card scripts you will build — these go on your resume and GitHub.</p>
+    <div id="projects-list"></div>
+  </div>
+
+  <div id="sec-cheatsheet" class="section">
+    <p style="font-size:13px;color:#666;margin-bottom:1rem;">Quick reference — everything you need to remember, all in one place.</p>
+    <div id="cheatsheet-content"></div>
+  </div>
+
+  <div id="sec-plan" class="section">
+    <p style="font-size:13px;color:#666;margin-bottom:1rem;">Your complete 60-day roadmap broken into 4 phases.</p>
+    <div id="plan-content"></div>
+  </div>
+</div>
+
+<script>
+const PHASES=[
+  {id:1,title:"Phase 1: Python basics",duration:"Days 1–15",badge:"badge-blue",badgeText:"Foundations",desc:"Variables, loops, functions — using hardware examples",barColor:"#378ADD",days:[{d:1,t:"What is Python? Install & first print"},{d:2,t:"Variables & data types"},{d:3,t:"Strings — reading device names"},{d:4,t:"Numbers & basic math"},{d:5,t:"Lists — storing PCIe device IDs"},{d:6,t:"Dictionaries — device info"},{d:7,t:"If/else conditions"},{d:8,t:"For loops — scan devices"},{d:9,t:"While loops"},{d:10,t:"Functions — reusable test steps"},{d:11,t:"File read — parse lspci output"},{d:12,t:"File write — save test results"},{d:13,t:"Error handling — try/except"},{d:14,t:"Mini project: device scanner"},{d:15,t:"Phase 1 review & quiz"}]},
+  {id:2,title:"Phase 2: Scripting skills",duration:"Days 16–30",badge:"badge-teal",badgeText:"Scripting",desc:"subprocess, regex, argparse — real test automation building blocks",barColor:"#1D9E75",days:[{d:16,t:"subprocess — run lspci from Python"},{d:17,t:"Capturing command output"},{d:18,t:"Regex — extract PCIe info"},{d:19,t:"argparse — CLI tool flags"},{d:20,t:"os & sys modules"},{d:21,t:"JSON — config files"},{d:22,t:"CSV — test result logs"},{d:23,t:"Classes intro — Device object"},{d:24,t:"Class methods & attributes"},{d:25,t:"Modules & imports"},{d:26,t:"Logging module"},{d:27,t:"Environment variables"},{d:28,t:"Mini project: PCIe link checker"},{d:29,t:"Mini project: AER log parser"},{d:30,t:"Phase 2 review"}]},
+  {id:3,title:"Phase 3: Test automation",duration:"Days 31–45",badge:"badge-amber",badgeText:"Automation",desc:"pytest, reporting, CI/CD basics — interview-ready automation skills",barColor:"#BA7517",days:[{d:31,t:"pytest basics"},{d:32,t:"Test fixtures"},{d:33,t:"Parametrize — test multiple speeds"},{d:34,t:"Assert patterns"},{d:35,t:"pytest markers & tags"},{d:36,t:"HTML test reports"},{d:37,t:"Mocking hardware calls"},{d:38,t:"SSH with Paramiko"},{d:39,t:"Serial/UART communication"},{d:40,t:"Config-driven test framework"},{d:41,t:"GitHub basics — push your code"},{d:42,t:"Git workflow"},{d:43,t:"Jenkins pipeline overview"},{d:44,t:"Project: LTSSM cycle test script"},{d:45,t:"Phase 3 review"}]},
+  {id:4,title:"Phase 4: Job-ready projects",duration:"Days 46–60",badge:"badge-green",badgeText:"Portfolio",desc:"Build 3 complete projects to show in interviews",barColor:"#639922",days:[{d:46,t:"Project 1 plan: PCIe health dashboard"},{d:47,t:"Read & parse lspci -vvv"},{d:48,t:"AER error counter"},{d:49,t:"Link speed/width checker"},{d:50,t:"HTML report output"},{d:51,t:"Project 1 complete & GitHub push"},{d:52,t:"Project 2 plan: LTSSM cycle automation"},{d:53,t:"Trigger L1 entry via script"},{d:54,t:"Cycle counter & logger"},{d:55,t:"Pass/fail verdict & report"},{d:56,t:"Project 2 complete"},{d:57,t:"Project 3: NIC bandwidth test tool"},{d:58,t:"iperf3 wrapper in Python"},{d:59,t:"Final project integration"},{d:60,t:"Resume update & mock interview"}]}
+];
+const TOPICS=[
+  {id:"vars",title:"Variables & data types",desc:"Store PCIe device info in variables",level:"Beginner"},
+  {id:"lists",title:"Lists & loops",desc:"Scan multiple PCIe slots in a loop",level:"Beginner"},
+  {id:"dicts",title:"Dictionaries",desc:"Store device config as key-value pairs",level:"Beginner"},
+  {id:"functions",title:"Functions",desc:"Write reusable test steps as functions",level:"Beginner"},
+  {id:"subprocess",title:"subprocess module",desc:"Run lspci and setpci from Python",level:"Intermediate"},
+  {id:"regex",title:"Regex for log parsing",desc:"Extract speeds and errors from lspci output",level:"Intermediate"},
+  {id:"fileio",title:"File read & write",desc:"Parse test logs and save results to CSV",level:"Beginner"},
+  {id:"exceptions",title:"Error handling",desc:"Handle hardware failures gracefully in scripts",level:"Beginner"},
+  {id:"classes",title:"Classes & objects",desc:"Model a PCIe Device as a Python class",level:"Intermediate"},
+  {id:"pytest",title:"pytest basics",desc:"Write your first automated test case",level:"Intermediate"},
+];
+const PROJECTS=[
+  {title:"PCIe device scanner",tag:"Phase 1",color:"badge-blue",desc:"A script that lists all PCIe devices on the system, shows vendor ID, device ID, and link speed.",skills:"subprocess, lists, print formatting",steps:["Run lspci using subprocess","Parse output line by line","Extract vendor and device IDs","Print a formatted table","Save results to a text file"]},
+  {title:"AER error log parser",tag:"Phase 2",color:"badge-teal",desc:"Reads PCIe AER logs, counts error types, and flags any uncorrectable errors.",skills:"file I/O, regex, dictionaries, CSV output",steps:["Read dmesg or AER log file","Use regex to find error keywords","Count correctable vs uncorrectable errors","Write summary to CSV","Print PASS/FAIL verdict"]},
+  {title:"LTSSM cycle test automation",tag:"Phase 3",color:"badge-amber",desc:"Automates LTSSM cycling — triggers L1 entry, reads link status after recovery, logs results for N cycles.",skills:"subprocess, loops, pytest, logging, HTML report",steps:["Accept device BDF and cycle count as CLI args","Loop N times: trigger L1 via ASPM command","Read Link Status register after recovery","Check speed/width matches expected","Log PASS/FAIL per cycle and generate HTML report"]},
+  {title:"PCIe health dashboard",tag:"Phase 4",color:"badge-green",desc:"Full tool: scans all PCIe devices, checks AER errors, verifies link speed, and generates an HTML health report.",skills:"All Phase 1–3 skills combined, HTML templating",steps:["Enumerate all PCIe devices","For each device: check link speed, width, AER errors","Generate a colour-coded HTML table (green/red)","Add summary: total devices, failed devices","Push to GitHub and show in interview"]}
+];
+const CHEATSHEET=[
+  {heading:"Print & variables",code:`# Print anything
+print("PCIe device found!")
+print(f"Speed: Gen{speed} Width: x{width}")
+
+# Variables — no need to declare type
+device_id = "14e4:1657"
+link_speed = 3
+is_active = True`},
+  {heading:"Lists",code:`devices = ["0000:01:00.0", "0000:02:00.0", "0000:03:00.0"]
+
+for bdf in devices:
+    print(f"Checking device: {bdf}")
+
+devices.append("0000:04:00.0")
+first = devices[0]`},
+  {heading:"Dictionaries",code:`device = {
+    "bdf": "0000:01:00.0",
+    "vendor": "Broadcom",
+    "speed": 3,
+    "width": 16
+}
+
+print(device["vendor"])    # Broadcom
+print(device.get("speed")) # 3`},
+  {heading:"Functions",code:`def check_link(bdf, expected_speed=3, expected_width=16):
+    speed = get_speed(bdf)
+    width = get_width(bdf)
+    return speed == expected_speed and width == expected_width
+
+result = check_link("0000:01:00.0")
+print("PASS" if result else "FAIL")`},
+  {heading:"subprocess — run system commands",code:`import subprocess
+
+result = subprocess.run(
+    ["lspci", "-vvv"],
+    capture_output=True,
+    text=True
+)
+output = result.stdout
+
+out = subprocess.run(
+    ["setpci", "-s", "01:00.0", "0x52.w"],
+    capture_output=True, text=True
+).stdout.strip()`},
+  {heading:"File read & write",code:`with open("results.txt", "w") as f:
+    f.write("Cycle 1: PASS\n")
+    f.write("Cycle 2: PASS\n")
+
+with open("dmesg.log", "r") as f:
+    lines = f.readlines()
+    for line in lines:
+        if "AER" in line:
+            print(line)`},
+  {heading:"Error handling",code:`try:
+    result = subprocess.run(["lspci"], check=True,
+                            capture_output=True, text=True)
+except FileNotFoundError:
+    print("lspci not found — are you on Linux?")
+except subprocess.CalledProcessError as e:
+    print(f"Command failed: {e}")`},
+  {heading:"Regex — extract data from text",code:`import re
+
+line = "LnkSta: Speed 8GT/s (ok), Width x16 (ok)"
+
+speed = re.search(r"Speed (\d+)GT/s", line)
+width = re.search(r"Width x(\d+)", line)
+
+if speed:
+    print(f"Gen speed: {speed.group(1)}")  # 8
+if width:
+    print(f"Link width: {width.group(1)}")  # 16`},
+];
+const PLAN_PHASES=[
+  {title:"Phase 1 — Foundations (Days 1–15)",badge:"badge-blue",badgeText:"No experience needed",goal:"Read, write, and run Python. Build small scripts that make sense to you.",daily:"30–45 min/day. Watch 1 YouTube tutorial, type the code yourself, then modify it.",topics:["Variables, strings, numbers","Lists and loops (scan PCIe devices)","Dictionaries (store device info)","Functions (reusable test steps)","File read/write (parse lspci output)"],resource:"Python.org beginner tutorial + freeCodeCamp Python Full Course (YouTube)"},
+  {title:"Phase 2 — Scripting (Days 16–30)",badge:"badge-teal",badgeText:"Writing real tools",goal:"Write scripts that run Linux commands, parse output, and save logs.",daily:"45 min/day. Build the PCIe scanner and AER parser mini-projects.",topics:["subprocess module (run lspci, setpci)","Regex (extract speeds from text)","argparse (CLI flags for your scripts)","Classes (model a PCIe Device)","JSON and CSV output"],resource:"Real Python website (realpython.com) — search each topic"},
+  {title:"Phase 3 — Test automation (Days 31–45)",badge:"badge-amber",badgeText:"Interview-ready",goal:"Write pytest test cases, generate reports, understand CI/CD basics.",daily:"45–60 min/day. Push code to GitHub every day.",topics:["pytest: write and run test cases","Fixtures and parametrize","HTML test reports","SSH with Paramiko","GitHub and git commit workflow"],resource:"pytest official docs (docs.pytest.org) + GitHub Learning Lab"},
+  {title:"Phase 4 — Portfolio projects (Days 46–60)",badge:"badge-green",badgeText:"Resume-ready",goal:"3 complete, working tools on GitHub that you can demo in your interview.",daily:"60 min/day. Polish, document, and push to GitHub.",topics:["PCIe health dashboard (HTML report)","LTSSM cycle automation script","NIC bandwidth test tool (iperf3 wrapper)","GitHub README for each project","Update resume with Python skills + GitHub link"],resource:"Your own code + Claude as mentor"}
+];
+const PROMPTS={
+  vars:"Teach me Python variables and data types for a complete beginner. Use PCIe validation examples like storing device IDs, link speeds, and error counts. Show simple code I can run immediately. Keep it friendly and encouraging.",
+  lists:"Teach me Python lists and for loops as a complete beginner. Use PCIe examples like looping through a list of PCIe device BDFs and printing info about each. Show small, runnable code examples.",
+  dicts:"Teach me Python dictionaries as a complete beginner. Use the example of storing PCIe device information (vendor ID, device ID, link speed, link width) in a dictionary. Keep examples simple.",
+  functions:"Teach me Python functions as a complete beginner. Use the example of writing a reusable function to check if a PCIe link is at the expected speed and width. Keep it beginner friendly.",
+  subprocess:"Teach me the Python subprocess module for an intermediate beginner in hardware validation. Show how to run lspci, capture its output, and print the results. Use real Linux PCIe commands.",
+  regex:"Teach me Python regex (re module) for parsing lspci output. Show how to extract link speed (GT/s) and link width from a line like 'LnkSta: Speed 8GT/s (ok), Width x16 (ok)'. Keep it beginner friendly.",
+  fileio:"Teach me Python file reading and writing for a beginner in hardware validation. Show how to read a dmesg log file looking for AER errors, and write test results to a text file.",
+  exceptions:"Teach me Python try/except error handling for a beginner. Use examples relevant to hardware test automation — handling cases where lspci is not found or a command fails.",
+  classes:"Teach me Python classes as a beginner. Create a simple PCIeDevice class with attributes like bdf, vendor, speed, width and a method called check_health() that returns PASS or FAIL.",
+  pytest:"Teach me pytest basics for a complete beginner. Show how to write a simple test function that checks if a PCIe device is enumerated. Explain assert, how to run pytest, and what PASSED/FAILED output means.",
+};
+const SYSTEM="You are a friendly, patient Python teacher for Veeranbu (Anbu), a Senior PCIe Validation Engineer with 7+ years of hardware experience but zero Python background. He is not good at maths. Always use PCIe, GPU, or hardware validation examples. Keep language simple, friendly, and encouraging. Format with: CONCEPT, CODE EXAMPLE (with comments), and TRY IT YOURSELF. Keep responses under 400 words. Never use complex maths.";
+
+let completed=new Set(), conversationHistory=[];
+
+function loadProgress(){
+  try{const r=localStorage.getItem("python_tracker_v1");if(r)completed=new Set(JSON.parse(r).completed||[]);}catch(e){}
+  renderTracker();updateStats();
+}
+function saveProgress(){try{localStorage.setItem("python_tracker_v1",JSON.stringify({completed:[...completed]}));}catch(e){}}
+function toggleDay(d){completed.has(d)?completed.delete(d):completed.add(d);saveProgress();renderTracker();updateStats();}
+function updateStats(){
+  const done=completed.size;
+  document.getElementById("stat-done").textContent=done;
+  document.getElementById("stat-left").textContent=60-done;
+  document.getElementById("main-progress").style.width=(done/60*100).toFixed(0)+"%";
+  document.getElementById("progress-label").textContent=done+" of 60 days completed";
+  let streak=0;for(let i=1;i<=60;i++){if(completed.has(i))streak++;else break;}
+  document.getElementById("stat-streak").textContent=streak;
+}
+function renderTracker(){
+  const c=document.getElementById("phases-tracker");c.innerHTML="";
+  PHASES.forEach(p=>{
+    const done=p.days.filter(d=>completed.has(d.d)).length;
+    const div=document.createElement("div");div.className="card";
+    div.innerHTML=`<div class="phase-header"><span class="badge ${p.badge}">${p.badgeText}</span><div><div class="phase-title">${p.title}</div><div class="phase-sub">${p.duration} · ${p.desc}</div></div></div>
+    <div class="progress-bar-wrap" style="margin-bottom:8px;"><div class="progress-bar" style="width:${(done/p.days.length*100).toFixed(0)}%;background:${p.barColor}"></div></div>
+    <div style="font-size:12px;color:#888;margin-bottom:10px;">${done}/${p.days.length} days</div>
+    <div class="day-grid">${p.days.map(d=>`<div class="day-item ${completed.has(d.d)?'done':''}" onclick="toggleDay(${d.d})"><div class="day-num">Day ${d.d}</div><div class="day-topic">${d.t}</div></div>`).join("")}</div>`;
+    c.appendChild(div);
+  });
+}
+function renderTopics(){
+  document.getElementById("topic-list").innerHTML=TOPICS.map(t=>`
+    <button class="topic-btn" onclick="loadLesson('${t.id}','${t.title}')">
+      <div class="t-num">${t.level==="Beginner"?"B":"M"}</div>
+      <div><div class="t-title">${t.title}</div><div class="t-desc">${t.desc}</div></div>
+    </button>`).join("");
+}
+async function loadLesson(id,title){
+  document.getElementById("lesson-box").style.display="block";
+  document.getElementById("lesson-title").textContent=title;
+  document.getElementById("lesson-content").innerHTML='<div class="lesson-loading">Loading your lesson...</div>';
+  conversationHistory=[{role:"user",content:PROMPTS[id]}];
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:SYSTEM,messages:conversationHistory})});
+    const data=await r.json();
+    const text=data.content.map(b=>b.text||"").join("");
+    conversationHistory.push({role:"assistant",content:text});
+    document.getElementById("lesson-content").innerHTML=`<div class="lesson-content">${text}</div>`;
+  }catch(e){document.getElementById("lesson-content").innerHTML='<div class="lesson-loading">Could not load — check internet connection.</div>';}
+}
+async function askFollowUp(){
+  const inp=document.getElementById("qa-input");const q=inp.value.trim();if(!q)return;inp.value="";
+  const c=document.getElementById("lesson-content");
+  c.innerHTML+=`<hr><div style="font-size:13px;color:#888;margin-bottom:6px;">You asked: ${q}</div><div class="lesson-loading" id="fl-load">Thinking...</div>`;
+  conversationHistory.push({role:"user",content:q});
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:"You are a friendly Python teacher for a PCIe hardware validation engineer who is a complete beginner. Use simple language and hardware/PCIe examples. Keep answers concise and encouraging.",messages:conversationHistory})});
+    const data=await r.json();
+    const text=data.content.map(b=>b.text||"").join("");
+    conversationHistory.push({role:"assistant",content:text});
+    document.getElementById("fl-load").outerHTML=`<div class="lesson-content">${text}</div>`;
+  }catch(e){}
+}
+function renderProjects(){
+  document.getElementById("projects-list").innerHTML=PROJECTS.map((p,i)=>`
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span class="badge ${p.color}">Project ${i+1}</span><span class="project-tag">${p.tag}</span></div>
+      <div style="font-size:15px;font-weight:500;margin-bottom:4px;">${p.title}</div>
+      <div style="font-size:13px;color:#666;margin-bottom:8px;">${p.desc}</div>
+      <div style="font-size:12px;color:#888;margin-bottom:10px;">Skills used: <span style="color:#333;">${p.skills}</span></div>
+      <div>${p.steps.map((s,j)=>`<div class="proj-step"><div class="proj-step-num">${j+1}</div><div>${s}</div></div>`).join("")}</div>
+    </div>`).join("");
+}
+function renderCheatsheet(){
+  document.getElementById("cheatsheet-content").innerHTML=CHEATSHEET.map(c=>`
+    <div class="card"><div class="section-heading">${c.heading}</div><div class="code-block">${c.code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div></div>`).join("");
+}
+function renderPlan(){
+  document.getElementById("plan-content").innerHTML=PLAN_PHASES.map(p=>`
+    <div class="card">
+      <div style="margin-bottom:0.5rem;"><span class="badge ${p.badge}">${p.badgeText}</span></div>
+      <div style="font-size:15px;font-weight:500;margin-bottom:6px;">${p.title}</div>
+      <div style="font-size:13px;color:#555;margin-bottom:4px;">Goal: ${p.goal}</div>
+      <div style="font-size:13px;color:#555;margin-bottom:10px;">Daily effort: ${p.daily}</div>
+      <div style="font-size:12px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Topics covered</div>
+      <div style="margin-bottom:10px;">${p.topics.map(t=>`<span class="topic-tag">${t}</span>`).join("")}</div>
+      <div style="font-size:12px;color:#888;">Resource: ${p.resource}</div>
+    </div>`).join("");
+}
+function showSection(id,btn){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("sec-"+id).classList.add("active");
+  btn.classList.add("active");
+}
+
+loadProgress();renderTopics();renderProjects();renderCheatsheet();renderPlan();
+</script>
+</body>
+</html>
