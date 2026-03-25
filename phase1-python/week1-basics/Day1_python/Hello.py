@@ -1,6 +1,6 @@
 # Introduction
 #Day1- Python Basics
-from math import floor
+
 
 print("Hello World") #print helloworld program
 print(99+99) #addition
